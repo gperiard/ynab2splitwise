@@ -29,9 +29,34 @@ The script uses the YNAB and Splitwise APIs to perform the synchronization. It f
 
 
 ## Usage
-This project uses poetry to manage its dependencies
+This project uses poetry to manage its dependencies.
 
-To run the script, simply execute python sync.py in your terminal. The script will synchronize all flagged transactions from the past day from YNAB to Splitwise for each account specified in the config.yml file.
+### Local Development
+You can use this setup to locally develop and test this script.
+It will build the docker image and mount the code as a volume in the container.
+
+1. `docker-compose up`
+
+### Production
+This docker-compose file uses the registry to pull the image and mount only the configuration file.
+
+```
+docker-compose -f docker-compose.prod.yml up
+```
+
+Alternatively you can use a docker command directly:
+
+```
+docker run -v ./config.yml:/app/config.yml ghcr.io/gperiard/ynab2splitwise:latest
+```
+
+### Run as a cronjob
+Ultimately, this script is meant to be run as a cronjob.
+
+Here's a configuration example to run the script every hour:
+```
+0 * * * * docker run -v <CONFIGURATION PATH>:/app/config.yml ghcr.io/gperiard/ynab2splitwise:latest
+```
 
 ## Contributing
 Pull requests are welcome.

@@ -3,5 +3,5 @@ services:
   syncer:
     build: .
     volumes:
-      - ./ynab2splitwise:/app
+      - ./ynab2splitwise:/app/ynab2splitwise
       - ./config.yml:/app/config.yml
