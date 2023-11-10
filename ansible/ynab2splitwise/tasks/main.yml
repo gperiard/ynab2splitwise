@@ -15,7 +15,7 @@
   ansible.builtin.cron:
     name: "ynab2splitwise"
     minute: "{{ y2s_cron_minute }}"
-    hour: "{{ y2s_cron_minute }}"
+    hour: "{{ y2s_cron_hour }}"
     day: "{{ y2s_cron_day }}"
     month: "{{ y2s_cron_month }}"
     weekday: "{{ y2s_cron_weekday }}"
