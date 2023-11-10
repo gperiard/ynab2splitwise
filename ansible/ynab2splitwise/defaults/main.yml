@@ -1,0 +1,9 @@
+---
+# defaults file for ynab2splitwise
+y2s_image_repository: ghcr.io/gperiard/ynab2splitwise
+y2s_image_tag: latest
+y2s_cron_minute: "0"
+y2s_cron_hour: "*"
+y2s_cron_day: "*"
+y2s_cron_month: "*"
+y2s_cron_weekday: "*"
