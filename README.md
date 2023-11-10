@@ -58,6 +58,37 @@ Here's a configuration example to run the script every hour:
 0 * * * * docker run -v <CONFIGURATION PATH>:/app/config.yml ghcr.io/gperiard/ynab2splitwise:latest
 ```
 
+#### Provision with Ansible
+There's an Ansible role in this project to simplify the configuration of the cronjob.
+
+1. Add this repo in your requirements.yml file:
+   ```
+   roles:
+    - src: https://github.com/gperiard/ynab2splitwise.git
+        version: v0.2.0
+        name: ynab2splitwise
+   ```
+2. Download it.
+   ```
+   ansible-galaxy install -r requirements.yml
+   ```
+3. Create a playbook. Here's an example:
+   ```yaml
+   # cronjobs.yml
+   ---
+   - hosts: cronjobs.periard.ca
+     become: true
+     vars_file:
+     - vault.yml # <- contains your account configuration under y2s_accounts_configuration
+     roles:
+       - role: ynab2splitwise
+         y2s_config_dir: /opt/docker/ynab2splitwise
+   ```
+4. Run it.
+   ```
+   ansible-playbook -i inventory cronjobs.yml
+   ```
+
 ## Contributing
 Pull requests are welcome.
 
