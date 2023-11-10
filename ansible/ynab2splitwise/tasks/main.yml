@@ -1,14 +1,14 @@
 ---
 - name: Create configuration folder
   file:
-    path: "{{ config_dir }}"
+    path: "{{ y2s_config_dir }}"
     state: directory
     mode: 0755
 
 - name: Create configuration file
   template:
     src: config.yml.j2
-    dest: "{{ config_dir }}/config.yml"
+    dest: "{{ y2s_config_dir }}/config.yml"
     mode: 0644
 
 - name: Configure Cronjob
@@ -19,4 +19,4 @@
     day: "{{ y2s_cron_day }}"
     month: "{{ y2s_cron_month }}"
     weekday: "{{ y2s_cron_weekday }}"
-    job: "docker run --rm -v {{ config_dir }}/config.yml:/app/config.yml {{ y2s_image_repository }}:{{ y2s_image_tag }}"
+    job: "docker run --rm -v {{ y2s_config_dir }}/config.yml:/app/config.yml {{ y2s_image_repository }}:{{ y2s_image_tag }}"

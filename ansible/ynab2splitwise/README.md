@@ -13,6 +13,7 @@ Role Variables
 
 Required:
 - y2s_accounts_configuration: List of accounts and their configuration. See ynab2splitwise documentation for details.
+- y2s_config_dir: Where to save the configuration file
 
 With defaults:
 - y2s_image_repository: Docker image repository for the ynab2splitwise image, "
