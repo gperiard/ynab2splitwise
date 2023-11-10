@@ -1,0 +1,7 @@
+version: '3'
+services:
+  syncer:
+    build: .
+    volumes:
+      - ./ynab2splitwise:/app
+      - ./config.yml:/app/config.yml

@@ -1,0 +1,6 @@
+version: '3'
+services:
+  syncer:
+    image: gperiard/ynab2splitwise:latest
+    volumes:
+      - ./config.yml:/app/config.yml

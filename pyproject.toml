@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "ynab2splitwise"
+version = "0.1.0"
+description = ""
+authors = ["Gabriel Périard-Tremblay <gabriel@periard.ca>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+requests = "2.31.0"
+ynab_api = "^2.0.2"
+splitwise = "3.0.0"
+pyyaml = "^6.0.1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

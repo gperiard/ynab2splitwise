@@ -1,0 +1,7 @@
+---
+accounts:
+  - name: Account 1
+    ynab_api_key: YOUR_YNAB_API_KEY
+    budget_id: YOUR_YNAB_BUDGET_ID
+    splitwise_api_key: YOUR_SPLITWISE_API_KEY
+    group_id: YOUR_SPLITWISE_GROUP_ID
