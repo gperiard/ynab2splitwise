@@ -10,7 +10,7 @@ YNAB_SYNCED_COLOR = os.environ.get("YNAB_SYNCED_COLOR", "green")
 
 
 # YNABClient is a minimal client for the YNAB API
-class YNABClient():
+class YNABClient:
     """
     A class for interacting with the YNAB API to sync transactions.
 
@@ -78,7 +78,8 @@ class YNABClient():
                 {
                     "id": t["id"],
                     "flag_color": YNAB_SYNCED_COLOR,
-                } for t in transactions
+                }
+                for t in transactions
             ]
         }
         response = self.request.patch(
@@ -91,7 +92,7 @@ class YNABClient():
 
 
 # SplitwiseClient is a minimal client for the Splitwise API
-class SplitwiseClient():
+class SplitwiseClient:
     base_url = "https://secure.splitwise.com/api/v3.0"
 
     def __init__(self, api_key, group_id):
@@ -127,9 +128,13 @@ def sync(account_config: dict) -> None:
     )
 
     # Get all transactions from YNAB since yesterday
-    since_date = (datetime.now().date() - timedelta(days=1)).isoformat()
+    since_date = (
+        datetime.now().date() - timedelta(days=int(os.environ.get("SINCE_DAYS", 1)))
+    ).isoformat()
     ynab_transactions = ynab.get_queued_transactions(since_date=since_date)
     expensed_transactions = []
+
+    logging.debug(ynab_transactions)
 
     # Create expenses in Splitwise
     for yt in ynab_transactions:
@@ -166,7 +171,7 @@ def main(config: dict):
 
 
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO)
+    logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO").upper())
     logging.info("Starting YNAB to Splitwise sync")
 
     # Load config
