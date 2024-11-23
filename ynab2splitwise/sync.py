@@ -37,6 +37,44 @@ class YNABClient:
         self.budget_id = budget_id
         self.request = requests.Session()
         self.request.headers.update({"Authorization": f"Bearer {api_key}"})
+        self._splitwise_category_id = None
+
+    def get_splitwise_category_id(self) -> str:
+        """
+        Gets the category ID for the Splitwise category, creating it if it doesn't exist.
+
+        Returns:
+        - str: The ID of the Splitwise category
+        """
+        if self._splitwise_category_id:
+            return self._splitwise_category_id
+
+        # Get all categories
+        response = self.request.get(
+            f"{self.base_url}/budgets/{self.budget_id}/categories"
+        ).json()
+
+        category_groups = response["data"]["category_groups"]
+
+        # Look for Splitwise category
+        for group in category_groups:
+            for category in group["categories"]:
+                if category["name"] == "Splitwise":
+                    self._splitwise_category_id = category["id"]
+                    return self._splitwise_category_id
+
+        # If we get here, we need to create the category
+        # First find the first category group that's not hidden
+        group_id = next(g["id"] for g in category_groups if not g.get("hidden"))
+
+        # Create Splitwise category
+        response = self.request.post(
+            f"{self.base_url}/budgets/{self.budget_id}/categories",
+            json={"category": {"name": "Splitwise", "category_group_id": group_id}},
+        ).json()
+
+        self._splitwise_category_id = response["data"]["category"]["id"]
+        return self._splitwise_category_id
 
     def get_queued_transactions(self, since_date=None) -> list:
         """
@@ -65,7 +103,8 @@ class YNABClient:
 
     def set_transactions_synced(self, transactions) -> None:
         """
-        Sets the flag color of the transactions to indicate that they have been synced.
+        Sets the flag color of the transactions to indicate that they have been synced
+        and splits the amount between the original category and Splitwise category.
 
         Args:
         - transactions (list): A list of transactions to mark as synced.
@@ -73,15 +112,33 @@ class YNABClient:
         Raises:
         - Exception: If the request to set the transactions as synced fails.
         """
-        payload = {
-            "transactions": [
-                {
-                    "id": t["id"],
-                    "flag_color": YNAB_SYNCED_COLOR,
-                }
-                for t in transactions
-            ]
-        }
+        splitwise_category_id = self.get_splitwise_category_id()
+
+        payload = {"transactions": []}
+
+        for t in transactions:
+            # Calculate split amount (50% of original)
+            split_amount = t["amount"] // 2
+            remaining_amount = t["amount"] - split_amount
+
+            transaction_update = {
+                "id": t["id"],
+                "flag_color": YNAB_SYNCED_COLOR,
+                "subtransactions": [
+                    {
+                        "amount": remaining_amount,
+                        "category_id": t.get("category_id"),
+                        "payee_id": t.get("payee_id"),
+                    },
+                    {
+                        "amount": split_amount,
+                        "category_id": splitwise_category_id,
+                        "payee_id": t.get("payee_id"),
+                    },
+                ],
+            }
+            payload["transactions"].append(transaction_update)
+
         response = self.request.patch(
             f"{self.base_url}/budgets/{self.budget_id}/transactions",
             json=payload,

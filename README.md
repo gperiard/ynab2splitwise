@@ -7,6 +7,11 @@ It supports multiple account configurations and is designed to be run as a cron 
 ## How it Works
 The script uses the YNAB and Splitwise APIs to perform the synchronization. It first fetches all transactions from YNAB for the past day and filters the ones flagged with a blue color. For each of these transactions, it creates an expense in Splitwise. If the expense is successfully created, the transaction is marked as synchronized in YNAB by setting the flag color to green.
 
+When a transaction is successfully synced to Splitwise, its amount is automatically split in YNAB:
+- 50% remains in the original budget category
+- 50% is moved to a "Splitwise" category (which is created automatically if it doesn't exist)
+
+This split categorization helps track shared expenses in your budget while maintaining accurate category spending records.
 
 ## Setup
 
