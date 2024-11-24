@@ -55,6 +55,35 @@ Alternatively you can use a docker command directly:
 docker run -v ./config.yml:/app/config.yml ghcr.io/gperiard/ynab2splitwise:latest
 ```
 
+### Backfilling Category Splits
+If you've been using this script before the category split feature was added, you can use the backfill script to split all previously synced transactions.
+
+#### Using Docker Compose (Recommended)
+```bash
+# Preview changes without making them
+docker-compose run --rm syncer python ynab2splitwise/backfill.py --dry-run
+
+# Actually perform the backfill
+docker-compose run --rm syncer python ynab2splitwise/backfill.py
+```
+
+#### Using Python Directly
+```bash
+# Preview changes without making them
+python ynab2splitwise/backfill.py --dry-run
+
+# Actually perform the backfill
+python ynab2splitwise/backfill.py
+```
+
+The backfill script will:
+1. Find all transactions marked as synced (green flag)
+2. For any that don't already have split categories:
+   - Split the amount 50/50 between the original category and the Splitwise category
+   - Preserve all other transaction details
+
+The script processes transactions in batches to avoid API limits and provides logging output to track progress. Using the `--dry-run` option will show you exactly what changes would be made without actually making them, which is useful for reviewing the impact before committing the changes.
+
 ### Run as a cronjob
 Ultimately, this script is meant to be run as a cronjob.
 
